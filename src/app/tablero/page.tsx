@@ -101,8 +101,8 @@ export default function Tablero() {
         )}
 
         {data && data.porAccion.length > 0 && (
-          <div className="glass-card rounded-2xl overflow-hidden mb-6">
-            <table className="w-full text-sm">
+          <div className="glass-card rounded-2xl overflow-x-auto mb-6">
+            <table className="w-full text-sm min-w-[560px]">
               <thead>
                 <tr className="text-left text-white/50 text-xs uppercase tracking-wide border-b border-white/10">
                   <th className="px-5 py-3 font-semibold">Tipo de solución</th>

@@ -1,0 +1,85 @@
+@import "tailwindcss";
+
+:root {
+  --red: #e63a2e;
+  --red-dark: #c22a20;
+  --orange: #f5821f;
+  --blue: #2e7ce0;
+  --blue-dark: #1b4fa0;
+  --navy: #0b1b3f;
+  --navy-2: #12275c;
+  --ink: #14161a;
+  --gray: #6b7076;
+  --bg: #0b1b3f;
+  --bg-soft: #12275c;
+  --card: rgba(255, 255, 255, 0.06);
+  --card-border: rgba(255, 255, 255, 0.12);
+  --foreground: #f5f7ff;
+  --font-head: var(--font-poppins), "Poppins", sans-serif;
+  --font-body: var(--font-inter), "Inter", sans-serif;
+}
+
+@theme inline {
+  --color-background: var(--bg);
+  --color-foreground: var(--foreground);
+  --color-brand-red: var(--red);
+  --color-brand-orange: var(--orange);
+  --color-brand-blue: var(--blue);
+  --font-sans: var(--font-body);
+  --font-heading: var(--font-head);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  min-height: 100dvh;
+  background:
+    radial-gradient(1200px 600px at 10% -10%, rgba(46, 124, 224, 0.35), transparent 60%),
+    radial-gradient(900px 500px at 100% 0%, rgba(230, 58, 46, 0.25), transparent 55%),
+    linear-gradient(180deg, var(--navy) 0%, var(--navy-2) 100%);
+  color: var(--foreground);
+  font-family: var(--font-body);
+  line-height: 1.5;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-head);
+  letter-spacing: -0.01em;
+}
+
+.glass-card {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  backdrop-filter: blur(10px);
+}
+
+.brand-gradient-text {
+  background: linear-gradient(90deg, var(--orange), var(--red));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-up {
+  animation: fade-up 0.4s ease both;
+}

@@ -1,17 +1,29 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
+import { BarChart3, Download, ScrollText, Search, Sparkles, Zap } from "lucide-react";
 import { ACCIONES, PAISES, ROOM_CODE } from "@/lib/data";
-import type { TableroData } from "@/lib/types";
+import type { AccionId, TableroData } from "@/lib/types";
 
-type PaisInfo = { id: string; nombre: string; bandera: string };
+type PaisInfo = { id: string; nombre: string; flag: string };
 
-function bandera(id: string) {
-  return PAISES.find((p) => p.id === id)?.bandera ?? "🏳️";
+const ICONOS_ACCION: Record<AccionId, React.ComponentType<{ className?: string }>> = {
+  buscar: Search,
+  analizar: BarChart3,
+  generar: Sparkles,
+  resumir: ScrollText,
+  automatizar: Zap,
+};
+
+function pais(id: string) {
+  return PAISES.find((p) => p.id === id);
 }
 
-function emojiAccion(id: string) {
-  return ACCIONES.find((a) => a.id === id)?.emoji ?? "💡";
+function IconoAccion({ id, className }: { id: string; className?: string }) {
+  const Icono = ICONOS_ACCION[id as AccionId];
+  if (!Icono) return null;
+  return <Icono className={className} />;
 }
 
 function horaCorta(ts: number) {
@@ -70,9 +82,7 @@ export default function Tablero() {
       <div className="max-w-5xl mx-auto">
         <div className="flex items-end justify-between flex-wrap gap-4 mb-8">
           <div>
-            <p className="text-xs tracking-[0.3em] uppercase text-white/50 font-semibold">
-              CCK · Regional AI Lab
-            </p>
+            <p className="text-xs tracking-[0.3em] uppercase text-white/50 font-semibold">CCK</p>
             <h1 className="text-3xl md:text-4xl font-extrabold mt-1">
               Mapa de Oportunidades <span className="brand-gradient-text">en vivo</span>
             </h1>
@@ -114,26 +124,38 @@ export default function Tablero() {
                 {data.porAccion.map((a) => (
                   <tr key={a.accion} className="border-b border-white/5 last:border-0">
                     <td className="px-5 py-3.5 font-semibold whitespace-nowrap">
-                      <span className="mr-2">{emojiAccion(a.accion)}</span>
-                      {a.label}
+                      <span className="inline-flex items-center gap-2">
+                        <IconoAccion id={a.accion} className="w-4 h-4 text-[var(--cyan)]" />
+                        {a.label}
+                      </span>
                     </td>
                     <td className="px-5 py-3.5">
                       <div className="flex gap-1.5 flex-wrap">
-                        {a.paises.map((id) => (
-                          <span
-                            key={id}
-                            className="inline-flex items-center gap-1 rounded-full bg-white/10 px-2 py-0.5 text-xs"
-                          >
-                            <span className="text-base leading-none">{bandera(id)}</span>
-                            <span className="text-white/70 font-semibold">{id}</span>
-                          </span>
-                        ))}
+                        {a.paises.map((id) => {
+                          const p = pais(id);
+                          if (!p) return null;
+                          return (
+                            <span
+                              key={id}
+                              className="inline-flex items-center gap-1.5 rounded-full bg-white/10 pl-1 pr-2 py-0.5 text-xs"
+                            >
+                              <Image
+                                src={p.flag}
+                                alt=""
+                                width={16}
+                                height={16}
+                                className="rounded-full"
+                              />
+                              <span className="text-white/70 font-semibold">{id}</span>
+                            </span>
+                          );
+                        })}
                       </div>
                     </td>
                     <td className="px-5 py-3.5">
                       <div className="h-3 rounded-full bg-white/10 overflow-hidden">
                         <div
-                          className="h-full rounded-full bg-gradient-to-r from-[var(--orange)] to-[var(--red)] transition-all duration-700"
+                          className="h-full rounded-full bg-gradient-to-r from-[var(--blue)] to-[var(--cyan)] transition-all duration-700"
                           style={{ width: `${Math.max(8, (a.count / maxCount) * 100)}%` }}
                         />
                       </div>
@@ -153,27 +175,40 @@ export default function Tablero() {
               </p>
               <a
                 href={`/api/export?room=${ROOM_CODE}`}
-                className="text-xs font-semibold text-white/70 hover:text-white border border-white/20 rounded-full px-3 py-1 transition-colors"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-white/70 hover:text-white border border-white/20 rounded-full px-3 py-1 transition-colors"
               >
+                <Download className="w-3.5 h-3.5" />
                 Descargar CSV
               </a>
             </div>
             <div className="space-y-2 max-h-[420px] overflow-y-auto pr-1">
-              {data.respuestas.map((r, i) => (
-                <div
-                  key={i}
-                  className="rounded-xl bg-white/5 border border-white/10 px-4 py-3 flex items-start gap-3"
-                >
-                  <span className="text-xl leading-none mt-0.5">{bandera(r.pais)}</span>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm text-white/85">{r.problema}</p>
-                    <p className="text-[11px] text-white/40 mt-1">
-                      {emojiAccion(r.accion)} {ACCIONES.find((a) => a.id === r.accion)?.label} ·{" "}
-                      {r.pais} · {horaCorta(r.createdAt)}
-                    </p>
+              {data.respuestas.map((r, i) => {
+                const p = pais(r.pais);
+                return (
+                  <div
+                    key={i}
+                    className="rounded-xl bg-white/5 border border-white/10 px-4 py-3 flex items-start gap-3"
+                  >
+                    {p && (
+                      <Image
+                        src={p.flag}
+                        alt=""
+                        width={20}
+                        height={20}
+                        className="rounded-full mt-0.5 shrink-0"
+                      />
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm text-white/85">{r.problema}</p>
+                      <p className="text-[11px] text-white/40 mt-1 inline-flex items-center gap-1">
+                        <IconoAccion id={r.accion} className="w-3 h-3" />
+                        {ACCIONES.find((a) => a.id === r.accion)?.label} · {r.pais} ·{" "}
+                        {horaCorta(r.createdAt)}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}

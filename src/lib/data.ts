@@ -2,14 +2,14 @@ import type { AccionId } from "./types";
 
 export const ROOM_CODE = process.env.NEXT_PUBLIC_ROOM_CODE || "LABREGIONAL";
 
-export const PAISES: { id: string; nombre: string; bandera: string }[] = [
-  { id: "CR", nombre: "Costa Rica", bandera: "🇨🇷" },
-  { id: "PA", nombre: "Panamá", bandera: "🇵🇦" },
-  { id: "SV", nombre: "El Salvador", bandera: "🇸🇻" },
-  { id: "PY", nombre: "Paraguay", bandera: "🇵🇾" },
-  { id: "HN", nombre: "Honduras", bandera: "🇭🇳" },
-  { id: "GT", nombre: "Guatemala", bandera: "🇬🇹" },
-  { id: "DO", nombre: "República Dominicana", bandera: "🇩🇴" },
+export const PAISES: { id: string; nombre: string; flag: string }[] = [
+  { id: "CR", nombre: "Costa Rica", flag: "/flags/cr.svg" },
+  { id: "PA", nombre: "Panamá", flag: "/flags/pa.svg" },
+  { id: "SV", nombre: "El Salvador", flag: "/flags/sv.svg" },
+  { id: "PY", nombre: "Paraguay", flag: "/flags/py.svg" },
+  { id: "HN", nombre: "Honduras", flag: "/flags/hn.svg" },
+  { id: "GT", nombre: "Guatemala", flag: "/flags/gt.svg" },
+  { id: "DO", nombre: "República Dominicana", flag: "/flags/do.svg" },
 ];
 
 export const ACCIONES: {

@@ -1,12 +1,22 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
+import { BarChart3, Globe2, LayoutDashboard, ScrollText, Search, Sparkles, Zap } from "lucide-react";
 import { ACCIONES, PAISES, ROOM_CODE } from "@/lib/data";
 import type { AccionId, IdeaGenerada } from "@/lib/types";
 
 type Paso = "bienvenida" | "pais" | "reto" | "accion" | "cargando" | "resultado" | "regional";
 
 type Ejemplo = { pais: string; problema: string };
+
+const ICONOS_ACCION: Record<AccionId, React.ComponentType<{ className?: string }>> = {
+  buscar: Search,
+  analizar: BarChart3,
+  generar: Sparkles,
+  resumir: ScrollText,
+  automatizar: Zap,
+};
 
 export default function Home() {
   const [paso, setPaso] = useState<Paso>("bienvenida");
@@ -63,12 +73,8 @@ export default function Home() {
     <main className="flex-1 flex flex-col items-center justify-center px-4 py-10">
       <div className="w-full max-w-md">
         <div className="text-center mb-6">
-          <p className="text-xs tracking-[0.3em] uppercase text-white/50 font-semibold">
-            CCK · Regional AI Lab
-          </p>
-          <h1 className="text-2xl font-extrabold mt-1">
-            LAB <span className="brand-gradient-text">Regional</span>
-          </h1>
+          <p className="text-xs tracking-[0.3em] uppercase text-white/50 font-semibold">CCK</p>
+          <h1 className="text-2xl font-extrabold mt-1 brand-gradient-text">LAB</h1>
         </div>
 
         {pasoIndex >= 0 && (
@@ -117,13 +123,19 @@ export default function Home() {
                   <button
                     key={p.id}
                     onClick={() => setPais(p.id)}
-                    className={`rounded-xl py-3.5 flex items-center gap-2.5 px-3 border transition-all ${
+                    className={`rounded-xl py-3 flex items-center gap-3 px-3 border transition-all ${
                       pais === p.id
                         ? "border-[var(--orange)] bg-white/15"
                         : "border-white/10 bg-white/5 hover:bg-white/10"
                     }`}
                   >
-                    <span className="text-2xl leading-none">{p.bandera}</span>
+                    <Image
+                      src={p.flag}
+                      alt=""
+                      width={32}
+                      height={32}
+                      className="rounded-full shrink-0"
+                    />
                     <span className="text-sm font-semibold text-left">{p.nombre}</span>
                   </button>
                 ))}
@@ -172,23 +184,26 @@ export default function Home() {
               subtitulo="Elegí la acción principal que necesitás."
             >
               <div className="grid grid-cols-2 gap-2.5">
-                {ACCIONES.map((a) => (
-                  <button
-                    key={a.id}
-                    onClick={() => setAccion(a.id)}
-                    disabled={enviando}
-                    className={`rounded-xl p-4 flex flex-col items-center gap-1.5 border transition-all disabled:opacity-40 ${
-                      accion === a.id
-                        ? "border-[var(--orange)] bg-white/15"
-                        : "border-white/10 bg-white/5 hover:bg-white/10"
-                    }`}
-                  >
-                    <span className="text-2xl">{a.emoji}</span>
-                    <span className="text-sm font-semibold text-center leading-tight">
-                      {a.label}
-                    </span>
-                  </button>
-                ))}
+                {ACCIONES.map((a) => {
+                  const Icono = ICONOS_ACCION[a.id];
+                  return (
+                    <button
+                      key={a.id}
+                      onClick={() => setAccion(a.id)}
+                      disabled={enviando}
+                      className={`rounded-xl p-4 flex flex-col items-center gap-2 border transition-all disabled:opacity-40 ${
+                        accion === a.id
+                          ? "border-[var(--orange)] bg-white/15"
+                          : "border-white/10 bg-white/5 hover:bg-white/10"
+                      }`}
+                    >
+                      <Icono className="w-6 h-6 text-[var(--cyan)]" />
+                      <span className="text-sm font-semibold text-center leading-tight">
+                        {a.label}
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
 
               <button
@@ -228,9 +243,10 @@ export default function Home() {
 
               <button
                 onClick={() => setPaso("regional")}
-                className="w-full rounded-xl py-3.5 font-bold bg-gradient-to-r from-[var(--blue)] to-[var(--blue-dark)] active:scale-[0.98] transition-transform"
+                className="w-full rounded-full py-3.5 font-bold bg-white/10 border border-[var(--cyan)]/40 text-white hover:bg-white/15 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
               >
-                Hacerla regional →
+                <Globe2 className="w-5 h-5 text-[var(--cyan)]" />
+                Ver oportunidad regional
               </button>
             </div>
           )}
@@ -258,13 +274,14 @@ export default function Home() {
               <div className="flex justify-center gap-2 flex-wrap">
                 {paisesMatch.map((id) => {
                   const p = PAISES.find((x) => x.id === id);
+                  if (!p) return null;
                   return (
                     <span
                       key={id}
-                      className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5"
+                      className="inline-flex items-center gap-1.5 rounded-full bg-white/10 pl-1.5 pr-3 py-1.5"
                     >
-                      <span className="text-2xl leading-none">{p?.bandera}</span>
-                      <span className="text-sm font-semibold text-white/80">{id}</span>
+                      <Image src={p.flag} alt="" width={22} height={22} className="rounded-full" />
+                      <span className="text-sm font-semibold text-white/80">{p.nombre}</span>
                     </span>
                   );
                 })}
@@ -280,10 +297,18 @@ export default function Home() {
                     return (
                       <div
                         key={i}
-                        className="rounded-lg bg-white/5 border border-white/10 px-3 py-2 text-sm text-white/75"
+                        className="rounded-lg bg-white/5 border border-white/10 px-3 py-2 text-sm text-white/75 flex items-start gap-2"
                       >
-                        <span className="mr-1.5">{p?.bandera}</span>
-                        &ldquo;{e.problema}&rdquo;
+                        {p && (
+                          <Image
+                            src={p.flag}
+                            alt=""
+                            width={18}
+                            height={18}
+                            className="rounded-full mt-0.5 shrink-0"
+                          />
+                        )}
+                        <span>&ldquo;{e.problema}&rdquo;</span>
                       </div>
                     );
                   })}
@@ -293,9 +318,10 @@ export default function Home() {
               <div className="pt-2 flex flex-col gap-2.5">
                 <a
                   href="/tablero"
-                  className="w-full rounded-xl py-3 font-semibold border border-white/20 text-white/90 hover:bg-white/5 transition-colors"
+                  className="w-full rounded-full py-3 font-semibold bg-white/5 border border-white/15 text-white/90 hover:bg-white/10 transition-colors flex items-center justify-center gap-2"
                 >
-                  Ver tablero regional en vivo
+                  <LayoutDashboard className="w-4 h-4 text-white/60" />
+                  Ver tablero en vivo
                 </a>
                 <button
                   onClick={reiniciar}
@@ -308,9 +334,8 @@ export default function Home() {
           )}
         </div>
 
-        <p className="text-center text-[11px] text-white/30 mt-6">
-          Una dinámica de{" "}
-          <span className="text-white/50 font-semibold">Regional AI Lab · CCK</span>
+        <p className="text-center text-[11px] text-white/30 mt-6 font-semibold tracking-wide">
+          LAB
         </p>
       </div>
     </main>

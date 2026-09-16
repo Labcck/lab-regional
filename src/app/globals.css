@@ -1,20 +1,22 @@
 @import "tailwindcss";
 
 :root {
-  --red: #e63a2e;
-  --red-dark: #c22a20;
-  --orange: #f5821f;
-  --blue: #2e7ce0;
-  --blue-dark: #1b4fa0;
-  --navy: #0b1b3f;
-  --navy-2: #12275c;
+  --blue: #0072ff;
+  --blue-dark: #0058c4;
+  --cyan: #00b8f0;
+  --orange: #ff9900;
+  --orange-dark: #d97f00;
+  --red: #ee4133;
+  --red-dark: #c7342a;
+  --charcoal: #221f20;
+  --charcoal-2: #333132;
   --ink: #14161a;
-  --gray: #6b7076;
-  --bg: #0b1b3f;
-  --bg-soft: #12275c;
+  --gray: #989a9d;
+  --bg: #221f20;
+  --bg-soft: #333132;
   --card: rgba(255, 255, 255, 0.06);
   --card-border: rgba(255, 255, 255, 0.12);
-  --foreground: #f5f7ff;
+  --foreground: #f5f7fa;
   --font-head: var(--font-poppins), "Poppins", sans-serif;
   --font-body: var(--font-inter), "Inter", sans-serif;
 }
@@ -40,9 +42,9 @@ html {
 body {
   min-height: 100dvh;
   background:
-    radial-gradient(1200px 600px at 10% -10%, rgba(46, 124, 224, 0.35), transparent 60%),
-    radial-gradient(900px 500px at 100% 0%, rgba(230, 58, 46, 0.25), transparent 55%),
-    linear-gradient(180deg, var(--navy) 0%, var(--navy-2) 100%);
+    radial-gradient(1200px 600px at 10% -10%, rgba(0, 114, 255, 0.28), transparent 60%),
+    radial-gradient(900px 500px at 100% 0%, rgba(255, 153, 0, 0.22), transparent 55%),
+    linear-gradient(180deg, var(--charcoal) 0%, var(--charcoal-2) 100%);
   color: var(--foreground);
   font-family: var(--font-body);
   line-height: 1.5;
@@ -63,7 +65,7 @@ h4 {
 }
 
 .brand-gradient-text {
-  background: linear-gradient(90deg, var(--orange), var(--red));
+  background: linear-gradient(90deg, var(--blue), var(--cyan));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;

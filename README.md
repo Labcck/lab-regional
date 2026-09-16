@@ -30,27 +30,57 @@ Environment Variables):
 |---|---|---|
 | `NEXT_PUBLIC_ROOM_CODE` | Código de acceso que las participantes escriben para entrar. Por defecto `LABREGIONAL`. Cambialo por sesión. | No |
 | `FACILITATOR_PIN` | PIN para poder reiniciar la sesión desde `/tablero`. Si no se define, cualquiera puede reiniciar. | No |
-| `KV_REST_API_URL` / `KV_REST_API_TOKEN` (o `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN`) | Base de datos Redis donde se guardan las respuestas de todos los dispositivos en tiempo real. **Necesaria para usarlo en vivo con varias personas.** | Sí, en producción |
+| `SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY` | Base de datos Supabase (Postgres) donde se guardan las respuestas. **Recomendada.** | Sí, en producción (o Redis, abajo) |
+| `KV_REST_API_URL` / `KV_REST_API_TOKEN` (o `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN`) | Alternativa a Supabase: base de datos Redis. Si están las dos configuradas, se usa Supabase. | No (alternativa) |
 
 ### ⚠️ Importante: base de datos compartida
 
-Sin una base de datos Redis conectada, las respuestas solo se guardan en la
+Sin Supabase ni Redis conectados, las respuestas solo se guardan en la
 memoria de una función de Vercel — con varios teléfonos conectados a la vez
 el tablero puede verse incompleto o inconsistente, porque Vercel ejecuta
 varias instancias de la función en paralelo.
 
-Antes del taller real, conectá una base Redis gratuita:
+En desarrollo local (`npm run dev`) no hace falta nada de esto: si no
+detecta las variables, la app guarda las respuestas en memoria (alcanza para
+probar el flujo en tu computadora).
+
+### Opción recomendada: Supabase
+
+1. Creá un proyecto gratis en [supabase.com](https://supabase.com).
+2. En **SQL Editor**, corré esto para crear la tabla:
+
+   ```sql
+   create table respuestas (
+     id uuid primary key,
+     room text not null,
+     pais text not null,
+     problema text not null,
+     accion text not null,
+     created_at timestamptz not null default now()
+   );
+
+   create index respuestas_room_idx on respuestas (room);
+
+   alter table respuestas enable row level security;
+   ```
+
+3. En **Settings → API**, copiá:
+   - **Project URL** → variable `SUPABASE_URL`
+   - **service_role** (la clave secreta, no la `anon`/pública) → variable
+     `SUPABASE_SERVICE_ROLE_KEY`
+4. Agregá esas dos variables en Vercel → Settings → Environment Variables, y
+   volvé a desplegar (redeploy).
+
+Con esto, en **Supabase → Table Editor → respuestas** podés ver en cualquier
+momento, sin necesidad del CSV, todo lo que fue escribiendo cada persona.
+
+### Alternativa: Redis (Upstash)
 
 1. En el proyecto en Vercel: **Storage → Marketplace Database Providers →
    Redis** (Upstash) → crear una base gratuita y conectarla al proyecto.
    Esto agrega automáticamente las variables `KV_REST_API_URL` y
-   `KV_REST_API_TOKEN` (o el nombre equivalente que use la integración).
-2. Volvé a desplegar (redeploy) el proyecto para que tome las nuevas
-   variables.
-
-En desarrollo local (`npm run dev`) no hace falta nada de esto: si no
-detecta las variables, la app guarda las respuestas en memoria (alcanza para
-probar el flujo en tu computadora).
+   `KV_REST_API_TOKEN`.
+2. Redeploy.
 
 ## Desplegar en Vercel
 

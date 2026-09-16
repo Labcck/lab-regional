@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { CATEGORIAS, PAISES, ROOM_CODE } from "@/lib/data";
+import { ACCIONES, PAISES, ROOM_CODE } from "@/lib/data";
 import type { TableroData } from "@/lib/types";
 
 type PaisInfo = { id: string; nombre: string; bandera: string };
@@ -10,8 +10,12 @@ function bandera(id: string) {
   return PAISES.find((p) => p.id === id)?.bandera ?? "🏳️";
 }
 
-function emojiCategoria(id: string) {
-  return CATEGORIAS.find((c) => c.id === id)?.emoji ?? "💡";
+function emojiAccion(id: string) {
+  return ACCIONES.find((a) => a.id === id)?.emoji ?? "💡";
+}
+
+function horaCorta(ts: number) {
+  return new Date(ts).toLocaleTimeString("es-CR", { hour: "2-digit", minute: "2-digit" });
 }
 
 export default function Tablero() {
@@ -59,7 +63,7 @@ export default function Tablero() {
     }
   }
 
-  const maxCount = data?.porCategoria[0]?.count ?? 1;
+  const maxCount = data?.porAccion[0]?.count ?? 1;
 
   return (
     <main className="flex-1 px-6 py-10 md:px-12">
@@ -79,78 +83,43 @@ export default function Tablero() {
               <p className="text-xs text-white/50">participantes</p>
             </div>
             <div>
-              <p className="text-3xl font-extrabold">{data?.totalCategorias ?? 0}</p>
-              <p className="text-xs text-white/50">oportunidades</p>
+              <p className="text-3xl font-extrabold">{data?.totalPaises ?? 0}</p>
+              <p className="text-xs text-white/50">países</p>
             </div>
           </div>
         </div>
 
-        {cargando && !data && (
-          <p className="text-white/50 text-sm">Cargando tablero...</p>
-        )}
+        {cargando && !data && <p className="text-white/50 text-sm">Cargando tablero...</p>}
 
-        {data && data.porCategoria.length === 0 && (
+        {data && data.respuestas.length === 0 && (
           <div className="glass-card rounded-2xl p-10 text-center">
             <p className="text-white/70">
-              Todavía no hay respuestas. Pedile a las participantes que
-              entren con el código{" "}
-              <span className="font-bold text-white">{ROOM_CODE}</span> en
-              sus teléfonos.
+              Todavía no hay respuestas. Compartí el enlace de la dinámica con
+              las participantes para que empiecen desde su celular.
             </p>
           </div>
         )}
 
-        {data && data.oportunidadTop && (
-          <div className="glass-card rounded-2xl p-6 mb-6 border-2 border-[var(--orange)]/40 animate-fade-up">
-            <p className="text-xs uppercase tracking-widest text-[var(--orange)] font-bold mb-2">
-              🏆 Oportunidad regional priorizada
-            </p>
-            <h2 className="text-2xl font-extrabold mb-3">
-              {data.oportunidadTop.idea.nombreIdea}
-            </h2>
-            <p className="text-sm text-white/75 mb-4 max-w-2xl">
-              {data.oportunidadTop.idea.comoFunciona}
-            </p>
-            <div className="flex items-center gap-4 flex-wrap">
-              <div className="flex gap-2 flex-wrap">
-                {data.oportunidadTop.combo.paises.map((id) => (
-                  <span
-                    key={id}
-                    className="inline-flex items-center gap-1 rounded-full bg-white/10 px-2.5 py-1 text-sm"
-                  >
-                    <span className="text-lg leading-none">{bandera(id)}</span>
-                    <span className="text-white/70 font-semibold">{id}</span>
-                  </span>
-                ))}
-              </div>
-              <span className="text-sm text-white/60">
-                {data.oportunidadTop.combo.count} respuestas ·{" "}
-                {data.oportunidadTop.combo.paises.length} países
-              </span>
-            </div>
-          </div>
-        )}
-
-        {data && data.porCategoria.length > 0 && (
-          <div className="glass-card rounded-2xl overflow-hidden">
+        {data && data.porAccion.length > 0 && (
+          <div className="glass-card rounded-2xl overflow-hidden mb-6">
             <table className="w-full text-sm">
               <thead>
                 <tr className="text-left text-white/50 text-xs uppercase tracking-wide border-b border-white/10">
-                  <th className="px-5 py-3 font-semibold">Reto</th>
+                  <th className="px-5 py-3 font-semibold">Tipo de solución</th>
                   <th className="px-5 py-3 font-semibold">Países</th>
                   <th className="px-5 py-3 font-semibold w-1/3">Interés</th>
                 </tr>
               </thead>
               <tbody>
-                {data.porCategoria.map((c) => (
-                  <tr key={c.categoria} className="border-b border-white/5 last:border-0">
+                {data.porAccion.map((a) => (
+                  <tr key={a.accion} className="border-b border-white/5 last:border-0">
                     <td className="px-5 py-3.5 font-semibold whitespace-nowrap">
-                      <span className="mr-2">{emojiCategoria(c.categoria)}</span>
-                      {c.label}
+                      <span className="mr-2">{emojiAccion(a.accion)}</span>
+                      {a.label}
                     </td>
                     <td className="px-5 py-3.5">
                       <div className="flex gap-1.5 flex-wrap">
-                        {c.paises.map((id) => (
+                        {a.paises.map((id) => (
                           <span
                             key={id}
                             className="inline-flex items-center gap-1 rounded-full bg-white/10 px-2 py-0.5 text-xs"
@@ -165,7 +134,7 @@ export default function Tablero() {
                       <div className="h-3 rounded-full bg-white/10 overflow-hidden">
                         <div
                           className="h-full rounded-full bg-gradient-to-r from-[var(--orange)] to-[var(--red)] transition-all duration-700"
-                          style={{ width: `${Math.max(8, (c.count / maxCount) * 100)}%` }}
+                          style={{ width: `${Math.max(8, (a.count / maxCount) * 100)}%` }}
                         />
                       </div>
                     </td>
@@ -173,6 +142,39 @@ export default function Tablero() {
                 ))}
               </tbody>
             </table>
+          </div>
+        )}
+
+        {data && data.respuestas.length > 0 && (
+          <div className="glass-card rounded-2xl p-5">
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-xs uppercase tracking-widest text-[var(--orange)] font-bold">
+                Retos compartidos en vivo
+              </p>
+              <a
+                href={`/api/export?room=${ROOM_CODE}`}
+                className="text-xs font-semibold text-white/70 hover:text-white border border-white/20 rounded-full px-3 py-1 transition-colors"
+              >
+                Descargar CSV
+              </a>
+            </div>
+            <div className="space-y-2 max-h-[420px] overflow-y-auto pr-1">
+              {data.respuestas.map((r, i) => (
+                <div
+                  key={i}
+                  className="rounded-xl bg-white/5 border border-white/10 px-4 py-3 flex items-start gap-3"
+                >
+                  <span className="text-xl leading-none mt-0.5">{bandera(r.pais)}</span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm text-white/85">{r.problema}</p>
+                    <p className="text-[11px] text-white/40 mt-1">
+                      {emojiAccion(r.accion)} {ACCIONES.find((a) => a.id === r.accion)?.label} ·{" "}
+                      {r.pais} · {horaCorta(r.createdAt)}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         )}
 

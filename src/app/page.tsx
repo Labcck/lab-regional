@@ -1,57 +1,27 @@
 "use client";
 
 import { useState } from "react";
-import { ACCIONES, CATEGORIAS, DIFICULTADES, PAISES, ROOM_CODE } from "@/lib/data";
-import type { AccionId, CategoriaId, DificultadId, IdeaGenerada } from "@/lib/types";
+import { ACCIONES, PAISES, ROOM_CODE } from "@/lib/data";
+import type { AccionId, IdeaGenerada } from "@/lib/types";
 
-type Paso =
-  | "bienvenida"
-  | "reto"
-  | "dificultad"
-  | "accion"
-  | "cargando"
-  | "resultado"
-  | "regional";
+type Paso = "bienvenida" | "pais" | "reto" | "accion" | "cargando" | "resultado" | "regional";
+
+type Ejemplo = { pais: string; problema: string };
 
 export default function Home() {
   const [paso, setPaso] = useState<Paso>("bienvenida");
-  const [codigo, setCodigo] = useState("");
   const [pais, setPais] = useState<string>("");
-  const [error, setError] = useState<string | null>(null);
-
-  const [categoria, setCategoria] = useState<CategoriaId | null>(null);
-  const [dificultad, setDificultad] = useState<DificultadId | null>(null);
+  const [problema, setProblema] = useState("");
   const [accion, setAccion] = useState<AccionId | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [enviando, setEnviando] = useState(false);
 
   const [idea, setIdea] = useState<IdeaGenerada | null>(null);
   const [paisesMatch, setPaisesMatch] = useState<string[]>([]);
   const [totalMatch, setTotalMatch] = useState(0);
-  const [enviando, setEnviando] = useState(false);
+  const [ejemplos, setEjemplos] = useState<Ejemplo[]>([]);
 
-  function entrar() {
-    setError(null);
-    if (codigo.trim().toUpperCase() !== ROOM_CODE) {
-      setError("Código incorrecto. Verificá con el facilitador del LAB.");
-      return;
-    }
-    if (!pais) {
-      setError("Elegí tu país para continuar.");
-      return;
-    }
-    setPaso("reto");
-  }
-
-  function elegirCategoria(id: CategoriaId) {
-    setCategoria(id);
-    setPaso("dificultad");
-  }
-
-  function elegirDificultad(id: DificultadId) {
-    setDificultad(id);
-    setPaso("accion");
-  }
-
-  async function elegirAccion(id: AccionId) {
+  async function verOportunidad(id: AccionId) {
     setAccion(id);
     setPaso("cargando");
     setEnviando(true);
@@ -59,19 +29,14 @@ export default function Home() {
       const res = await fetch("/api/responder", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          room: ROOM_CODE,
-          pais,
-          categoria,
-          dificultad,
-          accion: id,
-        }),
+        body: JSON.stringify({ room: ROOM_CODE, pais, problema, accion: id }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Error al enviar");
       setIdea(data.idea);
-      setPaisesMatch(data.paisesConMismaCategoria || []);
-      setTotalMatch(data.totalConMismaCategoria || 0);
+      setPaisesMatch(data.paisesConMismaAccion || []);
+      setTotalMatch(data.totalConMismaAccion || 0);
+      setEjemplos(data.ejemplos || []);
       setPaso("resultado");
     } catch {
       setError("No se pudo conectar. Intentá de nuevo.");
@@ -82,16 +47,17 @@ export default function Home() {
   }
 
   function reiniciar() {
-    setPaso("reto");
-    setCategoria(null);
-    setDificultad(null);
+    setPaso("pais");
+    setPais("");
+    setProblema("");
     setAccion(null);
     setIdea(null);
     setPaisesMatch([]);
     setTotalMatch(0);
+    setEjemplos([]);
   }
 
-  const pasoIndex = ["reto", "dificultad", "accion"].indexOf(paso);
+  const pasoIndex = ["pais", "reto", "accion"].indexOf(paso);
 
   return (
     <main className="flex-1 flex flex-col items-center justify-center px-4 py-10">
@@ -120,120 +86,118 @@ export default function Home() {
 
         <div className="glass-card rounded-2xl p-6 shadow-2xl animate-fade-up">
           {paso === "bienvenida" && (
-            <div className="space-y-5">
-              <div>
-                <h2 className="text-lg font-bold mb-1">Construyamos la próxima solución</h2>
+            <div className="space-y-5 text-center">
+              <div className="space-y-3">
+                <p className="text-xs uppercase tracking-widest text-[var(--orange)] font-bold">
+                  Bienvenidos al taller
+                </p>
+                <h2 className="text-xl font-extrabold leading-snug">
+                  ¿Qué debería construir el LAB para generar más valor en la
+                  región?
+                </h2>
                 <p className="text-sm text-white/70">
-                  Respondé 3 preguntas rápidas sobre tu reto. Entre todas las
-                  personas iremos construyendo el mapa de oportunidades
-                  regionales del LAB.
+                  En unos minutos vamos a compartir retos reales de nuestros
+                  países y convertirlos en oportunidades para el LAB.
                 </p>
               </div>
 
-              <div>
-                <label className="text-sm font-semibold text-white/80 block mb-1.5">
-                  Código de acceso
-                </label>
-                <input
-                  value={codigo}
-                  onChange={(e) => setCodigo(e.target.value)}
-                  placeholder="Pedile el código al facilitador"
-                  className="w-full rounded-xl bg-white/10 border border-white/15 px-4 py-3 text-base outline-none focus:border-[var(--orange)] placeholder:text-white/35"
-                  autoCapitalize="characters"
-                />
-              </div>
-
-              <div>
-                <label className="text-sm font-semibold text-white/80 block mb-1.5">
-                  Tu país
-                </label>
-                <div className="grid grid-cols-4 gap-2">
-                  {PAISES.map((p) => (
-                    <button
-                      key={p.id}
-                      onClick={() => setPais(p.id)}
-                      className={`rounded-xl py-2.5 flex flex-col items-center gap-0.5 border transition-all ${
-                        pais === p.id
-                          ? "border-[var(--orange)] bg-white/15 scale-105"
-                          : "border-white/10 bg-white/5 hover:bg-white/10"
-                      }`}
-                      title={p.nombre}
-                    >
-                      <span className="text-2xl leading-none">{p.bandera}</span>
-                      <span className="text-[10px] font-semibold text-white/50">{p.id}</span>
-                    </button>
-                  ))}
-                </div>
-                {pais && (
-                  <p className="text-xs text-white/50 mt-1.5">
-                    {PAISES.find((p) => p.id === pais)?.nombre}
-                  </p>
-                )}
-              </div>
-
-              {error && <p className="text-sm text-[var(--red)]">{error}</p>}
-
               <button
-                onClick={entrar}
+                onClick={() => setPaso("pais")}
                 className="w-full rounded-xl py-3.5 font-bold text-white bg-gradient-to-r from-[var(--orange)] to-[var(--red)] shadow-lg shadow-red-900/30 active:scale-[0.98] transition-transform"
               >
-                Entrar al LAB →
+                Empezar →
               </button>
             </div>
           )}
 
-          {paso === "reto" && (
-            <Pregunta
-              titulo="¿Dónde tenés el mayor reto?"
-              subtitulo="Elegí el área donde hoy sentís más fricción."
-            >
+          {paso === "pais" && (
+            <Pregunta titulo="¿De qué país venís?" subtitulo="Elegí tu país para continuar.">
               <div className="grid grid-cols-2 gap-2.5">
-                {CATEGORIAS.map((c) => (
-                  <OpcionGrande
-                    key={c.id}
-                    emoji={c.emoji}
-                    label={c.label}
-                    onClick={() => elegirCategoria(c.id)}
-                  />
+                {PAISES.map((p) => (
+                  <button
+                    key={p.id}
+                    onClick={() => setPais(p.id)}
+                    className={`rounded-xl py-3.5 flex items-center gap-2.5 px-3 border transition-all ${
+                      pais === p.id
+                        ? "border-[var(--orange)] bg-white/15"
+                        : "border-white/10 bg-white/5 hover:bg-white/10"
+                    }`}
+                  >
+                    <span className="text-2xl leading-none">{p.bandera}</span>
+                    <span className="text-sm font-semibold text-left">{p.nombre}</span>
+                  </button>
                 ))}
               </div>
+
+              <button
+                onClick={() => pais && setPaso("reto")}
+                disabled={!pais}
+                className="w-full mt-4 rounded-xl py-3.5 font-bold text-white bg-gradient-to-r from-[var(--orange)] to-[var(--red)] shadow-lg shadow-red-900/30 active:scale-[0.98] transition-transform disabled:opacity-30 disabled:pointer-events-none"
+              >
+                Continuar →
+              </button>
             </Pregunta>
           )}
 
-          {paso === "dificultad" && (
+          {paso === "reto" && (
             <Pregunta
-              titulo="¿Qué es lo que más te cuesta?"
-              subtitulo="Pensá en tu día a día actual."
+              titulo="Si el LAB pudiera resolver una sola cosa para tu país, ¿qué sería?"
+              subtitulo="Pensá en algo que hoy te genere tiempo, esfuerzo o dificultad."
             >
-              <div className="flex flex-col gap-2.5">
-                {DIFICULTADES.map((d) => (
-                  <OpcionFila
-                    key={d.id}
-                    emoji={d.emoji}
-                    label={d.label}
-                    onClick={() => elegirDificultad(d.id)}
-                  />
-                ))}
-              </div>
+              <textarea
+                value={problema}
+                onChange={(e) => setProblema(e.target.value)}
+                placeholder="Escribí tu reto en pocas palabras..."
+                rows={4}
+                maxLength={280}
+                className="w-full rounded-xl bg-white/10 border border-white/15 px-4 py-3 text-base outline-none focus:border-[var(--orange)] placeholder:text-white/35 resize-none"
+              />
+              <p className="text-[11px] text-white/35 text-right mt-1">
+                {problema.length}/280
+              </p>
+
+              <button
+                onClick={() => problema.trim() && setPaso("accion")}
+                disabled={!problema.trim()}
+                className="w-full mt-2 rounded-xl py-3.5 font-bold text-white bg-gradient-to-r from-[var(--orange)] to-[var(--red)] shadow-lg shadow-red-900/30 active:scale-[0.98] transition-transform disabled:opacity-30 disabled:pointer-events-none"
+              >
+                Continuar →
+              </button>
             </Pregunta>
           )}
 
           {paso === "accion" && (
             <Pregunta
-              titulo="¿Qué te gustaría que hiciera la IA?"
+              titulo="¿Qué debería hacer la solución ideal?"
               subtitulo="Elegí la acción principal que necesitás."
             >
               <div className="grid grid-cols-2 gap-2.5">
                 {ACCIONES.map((a) => (
-                  <OpcionGrande
+                  <button
                     key={a.id}
-                    emoji={a.emoji}
-                    label={a.label}
-                    onClick={() => elegirAccion(a.id)}
+                    onClick={() => setAccion(a.id)}
                     disabled={enviando}
-                  />
+                    className={`rounded-xl p-4 flex flex-col items-center gap-1.5 border transition-all disabled:opacity-40 ${
+                      accion === a.id
+                        ? "border-[var(--orange)] bg-white/15"
+                        : "border-white/10 bg-white/5 hover:bg-white/10"
+                    }`}
+                  >
+                    <span className="text-2xl">{a.emoji}</span>
+                    <span className="text-sm font-semibold text-center leading-tight">
+                      {a.label}
+                    </span>
+                  </button>
                 ))}
               </div>
+
+              <button
+                onClick={() => accion && verOportunidad(accion)}
+                disabled={!accion || enviando}
+                className="w-full mt-4 rounded-xl py-3.5 font-bold bg-gradient-to-r from-[var(--blue)] to-[var(--blue-dark)] active:scale-[0.98] transition-transform disabled:opacity-30 disabled:pointer-events-none"
+              >
+                Ver oportunidad →
+              </button>
               {error && <p className="text-sm text-[var(--red)] mt-3">{error}</p>}
             </Pregunta>
           )}
@@ -241,7 +205,7 @@ export default function Home() {
           {paso === "cargando" && (
             <div className="py-14 flex flex-col items-center gap-4 text-center">
               <div className="h-10 w-10 rounded-full border-2 border-white/20 border-t-[var(--orange)] animate-spin" />
-              <p className="text-white/70 text-sm">Construyendo tu idea...</p>
+              <p className="text-white/70 text-sm">Construyendo tu oportunidad...</p>
             </div>
           )}
 
@@ -255,7 +219,7 @@ export default function Home() {
               </div>
 
               <dl className="space-y-3 text-sm">
-                <Campo label="Problema" valor={idea.problema} />
+                <Campo label="Reto" valor={idea.problema} />
                 <Campo label="Usuario" valor={idea.usuario} />
                 <Campo label="Cómo funcionaría" valor={idea.comoFunciona} />
                 <Campo label="Beneficio" valor={idea.beneficio} />
@@ -280,14 +244,14 @@ export default function Home() {
 
               {totalMatch > 1 ? (
                 <p className="text-sm text-white/80">
-                  Este mismo reto ya fue identificado en{" "}
+                  Este mismo tipo de solución ya fue elegido en{" "}
                   <span className="font-bold text-white">{totalMatch} países</span>{" "}
                   durante esta sesión.
                 </p>
               ) : (
                 <p className="text-sm text-white/80">
-                  Sos la primera persona en identificar este reto. ¡Seguí
-                  atenta al tablero regional!
+                  Sos la primera persona en elegir este tipo de solución.
+                  ¡Seguí atenta al tablero regional!
                 </p>
               )}
 
@@ -305,6 +269,26 @@ export default function Home() {
                   );
                 })}
               </div>
+
+              {ejemplos.length > 0 && (
+                <div className="text-left space-y-2 pt-1">
+                  <p className="text-[11px] uppercase tracking-wide text-white/40 font-bold">
+                    Otros retos parecidos
+                  </p>
+                  {ejemplos.map((e, i) => {
+                    const p = PAISES.find((x) => x.id === e.pais);
+                    return (
+                      <div
+                        key={i}
+                        className="rounded-lg bg-white/5 border border-white/10 px-3 py-2 text-sm text-white/75"
+                      >
+                        <span className="mr-1.5">{p?.bandera}</span>
+                        &ldquo;{e.problema}&rdquo;
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
 
               <div className="pt-2 flex flex-col gap-2.5">
                 <a
@@ -350,49 +334,6 @@ function Pregunta({
       </div>
       {children}
     </div>
-  );
-}
-
-function OpcionGrande({
-  emoji,
-  label,
-  onClick,
-  disabled,
-}: {
-  emoji: string;
-  label: string;
-  onClick: () => void;
-  disabled?: boolean;
-}) {
-  return (
-    <button
-      onClick={onClick}
-      disabled={disabled}
-      className="rounded-xl p-4 flex flex-col items-center gap-1.5 bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/25 active:scale-95 transition-all disabled:opacity-40"
-    >
-      <span className="text-2xl">{emoji}</span>
-      <span className="text-sm font-semibold text-center leading-tight">{label}</span>
-    </button>
-  );
-}
-
-function OpcionFila({
-  emoji,
-  label,
-  onClick,
-}: {
-  emoji: string;
-  label: string;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      onClick={onClick}
-      className="rounded-xl px-4 py-3.5 flex items-center gap-3 bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/25 active:scale-[0.98] transition-all text-left"
-    >
-      <span className="text-xl">{emoji}</span>
-      <span className="text-sm font-semibold capitalize">{label}</span>
-    </button>
   );
 }
 

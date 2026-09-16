@@ -1,30 +1,11 @@
-export type CategoriaId =
-  | "investigacion"
-  | "clientes"
-  | "propuestas"
-  | "contenido"
-  | "crisis"
-  | "procesos"
-  | "conocimiento"
-  | "otro";
-
-export type DificultadId =
-  | "encontrar"
-  | "rapido"
-  | "ordenar"
-  | "crear"
-  | "repetir";
-
-export type AccionId = "buscar" | "analizar" | "crear" | "automatizar" | "recomendar";
+export type AccionId = "buscar" | "analizar" | "generar" | "resumir" | "automatizar";
 
 export interface Respuesta {
   id: string;
   room: string;
   pais: string;
-  categoria: CategoriaId;
-  dificultad: DificultadId;
+  problema: string;
   accion: AccionId;
-  nombre: string;
   createdAt: number;
 }
 
@@ -37,24 +18,21 @@ export interface IdeaGenerada {
   mvp: string;
 }
 
-export interface ComboStat {
-  categoria: CategoriaId;
+export interface AccionStat {
   accion: AccionId;
+  label: string;
   count: number;
   paises: string[];
 }
 
 export interface TableroData {
   totalParticipantes: number;
-  totalCategorias: number;
-  porCategoria: {
-    categoria: CategoriaId;
-    label: string;
-    count: number;
-    paises: string[];
+  totalPaises: number;
+  porAccion: AccionStat[];
+  respuestas: {
+    pais: string;
+    problema: string;
+    accion: AccionId;
+    createdAt: number;
   }[];
-  oportunidadTop: {
-    combo: ComboStat;
-    idea: IdeaGenerada;
-  } | null;
 }

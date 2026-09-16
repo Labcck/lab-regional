@@ -1,21 +1,17 @@
-import { getAccion, getCategoria, getDificultad } from "./data";
-import type { AccionId, CategoriaId, DificultadId, IdeaGenerada } from "./types";
+import { getAccion, getPais } from "./data";
+import type { AccionId, IdeaGenerada } from "./types";
 
-export function generarIdea(
-  categoriaId: CategoriaId,
-  dificultadId: DificultadId,
-  accionId: AccionId
-): IdeaGenerada {
-  const categoria = getCategoria(categoriaId);
-  const dificultad = getDificultad(dificultadId);
+export function generarIdea(pais: string, problema: string, accionId: AccionId): IdeaGenerada {
   const accion = getAccion(accionId);
+  const paisNombre = getPais(pais)?.nombre ?? pais;
 
   return {
-    nombreIdea: `${accion.nombrePrefijo} ${categoria.dominio}`,
-    problema: `Actualmente, a los equipos les cuesta ${dificultad.label} en el área de ${categoria.label.toLowerCase()}.`,
-    usuario: categoria.usuario,
-    comoFunciona: accion.comoFunciona(categoria.label),
-    beneficio: `Reduce el tiempo dedicado a ${dificultad.label} y libera al equipo para tareas de mayor valor estratégico.`,
+    nombreIdea: `${accion.nombrePrefijo} para ${paisNombre}`,
+    problema,
+    usuario: `Tu equipo en ${paisNombre}`,
+    comoFunciona: accion.comoFunciona(problema),
+    beneficio:
+      "Reduce el tiempo y el esfuerzo dedicado a este reto, liberando al equipo para tareas de mayor valor estratégico.",
     mvp: accion.mvp,
   };
 }

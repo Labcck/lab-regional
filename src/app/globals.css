@@ -3,20 +3,21 @@
 :root {
   --blue: #0072ff;
   --blue-dark: #0058c4;
+  --blue-light: #eaf3ff;
   --cyan: #00b8f0;
   --orange: #ff9900;
   --orange-dark: #d97f00;
+  --orange-light: #fff3e0;
   --red: #ee4133;
   --red-dark: #c7342a;
-  --charcoal: #221f20;
-  --charcoal-2: #333132;
-  --ink: #14161a;
-  --gray: #989a9d;
-  --bg: #221f20;
-  --bg-soft: #333132;
-  --card: rgba(255, 255, 255, 0.06);
-  --card-border: rgba(255, 255, 255, 0.12);
-  --foreground: #f5f7fa;
+  --ink: #232526;
+  --gray: #6b7076;
+  --gray-soft: #e7e8e9;
+  --bg: #ffffff;
+  --bg-soft: #f5f9ff;
+  --card: #ffffff;
+  --card-border: #e5eaf2;
+  --foreground: #232526;
   --font-head: var(--font-poppins), "Poppins", sans-serif;
   --font-body: var(--font-inter), "Inter", sans-serif;
 }
@@ -36,15 +37,15 @@
 }
 
 html {
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 body {
   min-height: 100dvh;
   background:
-    radial-gradient(1200px 600px at 10% -10%, rgba(0, 114, 255, 0.28), transparent 60%),
-    radial-gradient(900px 500px at 100% 0%, rgba(255, 153, 0, 0.22), transparent 55%),
-    linear-gradient(180deg, var(--charcoal) 0%, var(--charcoal-2) 100%);
+    radial-gradient(1200px 600px at 10% -10%, rgba(0, 114, 255, 0.12), transparent 60%),
+    radial-gradient(900px 500px at 100% 0%, rgba(255, 153, 0, 0.08), transparent 55%),
+    linear-gradient(180deg, var(--bg) 0%, var(--bg-soft) 100%);
   color: var(--foreground);
   font-family: var(--font-body);
   line-height: 1.5;
@@ -61,7 +62,7 @@ h4 {
 .glass-card {
   background: var(--card);
   border: 1px solid var(--card-border);
-  backdrop-filter: blur(10px);
+  box-shadow: 0 10px 30px -10px rgba(0, 87, 196, 0.12);
 }
 
 .brand-gradient-text {

@@ -73,7 +73,7 @@ export default function Home() {
     <main className="flex-1 flex flex-col items-center justify-center px-4 py-10">
       <div className="w-full max-w-md">
         <div className="text-center mb-6">
-          <p className="text-xs tracking-[0.3em] uppercase text-white/50 font-semibold">CCK</p>
+          <p className="text-xs tracking-[0.3em] uppercase text-black/40 font-semibold">CCK</p>
           <h1 className="text-2xl font-extrabold mt-1 brand-gradient-text">LAB</h1>
         </div>
 
@@ -83,14 +83,14 @@ export default function Home() {
               <div
                 key={i}
                 className={`h-1.5 rounded-full transition-all ${
-                  i <= pasoIndex ? "w-8 bg-[var(--orange)]" : "w-4 bg-white/15"
+                  i <= pasoIndex ? "w-8 bg-[var(--blue)]" : "w-4 bg-black/10"
                 }`}
               />
             ))}
           </div>
         )}
 
-        <div className="glass-card rounded-2xl p-6 shadow-2xl animate-fade-up">
+        <div className="glass-card rounded-2xl p-6 animate-fade-up">
           {paso === "bienvenida" && (
             <div className="space-y-5 text-center">
               <div className="space-y-3">
@@ -101,7 +101,7 @@ export default function Home() {
                   ¿Qué debería construir el LAB para generar más valor en la
                   región?
                 </h2>
-                <p className="text-sm text-white/70">
+                <p className="text-sm text-black/60">
                   En unos minutos vamos a compartir retos reales de nuestros
                   países y convertirlos en oportunidades para el LAB.
                 </p>
@@ -109,7 +109,7 @@ export default function Home() {
 
               <button
                 onClick={() => setPaso("pais")}
-                className="w-full rounded-xl py-3.5 font-bold text-white bg-gradient-to-r from-[var(--orange)] to-[var(--red)] shadow-lg shadow-red-900/30 active:scale-[0.98] transition-transform"
+                className="w-full rounded-xl py-3.5 font-bold text-white bg-gradient-to-r from-[var(--blue)] to-[var(--cyan)] shadow-lg shadow-blue-500/25 active:scale-[0.98] transition-transform"
               >
                 Empezar →
               </button>
@@ -125,8 +125,8 @@ export default function Home() {
                     onClick={() => setPais(p.id)}
                     className={`rounded-xl py-3 flex items-center gap-3 px-3 border transition-all ${
                       pais === p.id
-                        ? "border-[var(--orange)] bg-white/15"
-                        : "border-white/10 bg-white/5 hover:bg-white/10"
+                        ? "border-[var(--blue)] bg-[var(--blue-light)]"
+                        : "border-[var(--card-border)] bg-white hover:bg-[var(--bg-soft)]"
                     }`}
                   >
                     <Image
@@ -144,7 +144,7 @@ export default function Home() {
               <button
                 onClick={() => pais && setPaso("reto")}
                 disabled={!pais}
-                className="w-full mt-4 rounded-xl py-3.5 font-bold text-white bg-gradient-to-r from-[var(--orange)] to-[var(--red)] shadow-lg shadow-red-900/30 active:scale-[0.98] transition-transform disabled:opacity-30 disabled:pointer-events-none"
+                className="w-full mt-4 rounded-xl py-3.5 font-bold text-white bg-gradient-to-r from-[var(--blue)] to-[var(--cyan)] shadow-lg shadow-blue-500/25 active:scale-[0.98] transition-transform disabled:opacity-30 disabled:pointer-events-none"
               >
                 Continuar →
               </button>
@@ -162,16 +162,16 @@ export default function Home() {
                 placeholder="Escribí tu reto en pocas palabras..."
                 rows={4}
                 maxLength={280}
-                className="w-full rounded-xl bg-white/10 border border-white/15 px-4 py-3 text-base outline-none focus:border-[var(--orange)] placeholder:text-white/35 resize-none"
+                className="w-full rounded-xl bg-[var(--bg-soft)] border border-[var(--card-border)] px-4 py-3 text-base outline-none focus:border-[var(--blue)] placeholder:text-black/30 resize-none"
               />
-              <p className="text-[11px] text-white/35 text-right mt-1">
+              <p className="text-[11px] text-black/30 text-right mt-1">
                 {problema.length}/280
               </p>
 
               <button
                 onClick={() => problema.trim() && setPaso("accion")}
                 disabled={!problema.trim()}
-                className="w-full mt-2 rounded-xl py-3.5 font-bold text-white bg-gradient-to-r from-[var(--orange)] to-[var(--red)] shadow-lg shadow-red-900/30 active:scale-[0.98] transition-transform disabled:opacity-30 disabled:pointer-events-none"
+                className="w-full mt-2 rounded-xl py-3.5 font-bold text-white bg-gradient-to-r from-[var(--blue)] to-[var(--cyan)] shadow-lg shadow-blue-500/25 active:scale-[0.98] transition-transform disabled:opacity-30 disabled:pointer-events-none"
               >
                 Continuar →
               </button>
@@ -193,11 +193,11 @@ export default function Home() {
                       disabled={enviando}
                       className={`rounded-xl p-4 flex flex-col items-center gap-2 border transition-all disabled:opacity-40 ${
                         accion === a.id
-                          ? "border-[var(--orange)] bg-white/15"
-                          : "border-white/10 bg-white/5 hover:bg-white/10"
+                          ? "border-[var(--blue)] bg-[var(--blue-light)]"
+                          : "border-[var(--card-border)] bg-white hover:bg-[var(--bg-soft)]"
                       }`}
                     >
-                      <Icono className="w-6 h-6 text-[var(--cyan)]" />
+                      <Icono className="w-6 h-6 text-[var(--blue)]" />
                       <span className="text-sm font-semibold text-center leading-tight">
                         {a.label}
                       </span>
@@ -209,7 +209,7 @@ export default function Home() {
               <button
                 onClick={() => accion && verOportunidad(accion)}
                 disabled={!accion || enviando}
-                className="w-full mt-4 rounded-xl py-3.5 font-bold bg-gradient-to-r from-[var(--blue)] to-[var(--blue-dark)] active:scale-[0.98] transition-transform disabled:opacity-30 disabled:pointer-events-none"
+                className="w-full mt-4 rounded-xl py-3.5 font-bold text-white bg-gradient-to-r from-[var(--blue)] to-[var(--blue-dark)] active:scale-[0.98] transition-transform disabled:opacity-30 disabled:pointer-events-none"
               >
                 Ver oportunidad →
               </button>
@@ -219,8 +219,8 @@ export default function Home() {
 
           {paso === "cargando" && (
             <div className="py-14 flex flex-col items-center gap-4 text-center">
-              <div className="h-10 w-10 rounded-full border-2 border-white/20 border-t-[var(--orange)] animate-spin" />
-              <p className="text-white/70 text-sm">Construyendo tu oportunidad...</p>
+              <div className="h-10 w-10 rounded-full border-2 border-black/10 border-t-[var(--blue)] animate-spin" />
+              <p className="text-black/60 text-sm">Construyendo tu oportunidad...</p>
             </div>
           )}
 
@@ -243,9 +243,9 @@ export default function Home() {
 
               <button
                 onClick={() => setPaso("regional")}
-                className="w-full rounded-full py-3.5 font-bold bg-white/10 border border-[var(--cyan)]/40 text-white hover:bg-white/15 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+                className="w-full rounded-full py-3.5 font-bold bg-white border border-[var(--blue)] text-[var(--blue)] hover:bg-[var(--blue-light)] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
               >
-                <Globe2 className="w-5 h-5 text-[var(--cyan)]" />
+                <Globe2 className="w-5 h-5" />
                 Ver oportunidad regional
               </button>
             </div>
@@ -259,13 +259,13 @@ export default function Home() {
               <h2 className="text-xl font-extrabold">{idea.nombreIdea}</h2>
 
               {totalMatch > 1 ? (
-                <p className="text-sm text-white/80">
+                <p className="text-sm text-black/70">
                   Este mismo tipo de solución ya fue elegido en{" "}
-                  <span className="font-bold text-white">{totalMatch} países</span>{" "}
+                  <span className="font-bold text-black">{totalMatch} países</span>{" "}
                   durante esta sesión.
                 </p>
               ) : (
-                <p className="text-sm text-white/80">
+                <p className="text-sm text-black/70">
                   Sos la primera persona en elegir este tipo de solución.
                   ¡Seguí atenta al tablero regional!
                 </p>
@@ -278,10 +278,12 @@ export default function Home() {
                   return (
                     <span
                       key={id}
-                      className="inline-flex items-center gap-1.5 rounded-full bg-white/10 pl-1.5 pr-3 py-1.5"
+                      className="inline-flex items-center gap-1.5 rounded-full bg-[var(--blue-light)] pl-1.5 pr-3 py-1.5"
                     >
                       <Image src={p.flag} alt="" width={22} height={22} className="rounded-full" />
-                      <span className="text-sm font-semibold text-white/80">{p.nombre}</span>
+                      <span className="text-sm font-semibold text-[var(--blue-dark)]">
+                        {p.nombre}
+                      </span>
                     </span>
                   );
                 })}
@@ -289,7 +291,7 @@ export default function Home() {
 
               {ejemplos.length > 0 && (
                 <div className="text-left space-y-2 pt-1">
-                  <p className="text-[11px] uppercase tracking-wide text-white/40 font-bold">
+                  <p className="text-[11px] uppercase tracking-wide text-black/40 font-bold">
                     Otros retos parecidos
                   </p>
                   {ejemplos.map((e, i) => {
@@ -297,7 +299,7 @@ export default function Home() {
                     return (
                       <div
                         key={i}
-                        className="rounded-lg bg-white/5 border border-white/10 px-3 py-2 text-sm text-white/75 flex items-start gap-2"
+                        className="rounded-lg bg-[var(--bg-soft)] border border-[var(--card-border)] px-3 py-2 text-sm text-black/70 flex items-start gap-2"
                       >
                         {p && (
                           <Image
@@ -318,14 +320,14 @@ export default function Home() {
               <div className="pt-2 flex flex-col gap-2.5">
                 <a
                   href="/tablero"
-                  className="w-full rounded-full py-3 font-semibold bg-white/5 border border-white/15 text-white/90 hover:bg-white/10 transition-colors flex items-center justify-center gap-2"
+                  className="w-full rounded-full py-3 font-semibold bg-white border border-[var(--card-border)] text-black/80 hover:bg-[var(--bg-soft)] transition-colors flex items-center justify-center gap-2"
                 >
-                  <LayoutDashboard className="w-4 h-4 text-white/60" />
+                  <LayoutDashboard className="w-4 h-4 text-[var(--blue)]" />
                   Ver tablero en vivo
                 </a>
                 <button
                   onClick={reiniciar}
-                  className="text-xs text-white/40 hover:text-white/70 transition-colors"
+                  className="text-xs text-black/35 hover:text-black/60 transition-colors"
                 >
                   Enviar otro reto
                 </button>
@@ -334,7 +336,7 @@ export default function Home() {
           )}
         </div>
 
-        <p className="text-center text-[11px] text-white/30 mt-6 font-semibold tracking-wide">
+        <p className="text-center text-[11px] text-black/25 mt-6 font-semibold tracking-wide">
           LAB
         </p>
       </div>
@@ -355,7 +357,7 @@ function Pregunta({
     <div className="space-y-4">
       <div>
         <h2 className="text-lg font-bold leading-snug">{titulo}</h2>
-        <p className="text-sm text-white/60">{subtitulo}</p>
+        <p className="text-sm text-black/55">{subtitulo}</p>
       </div>
       {children}
     </div>
@@ -364,9 +366,9 @@ function Pregunta({
 
 function Campo({ label, valor }: { label: string; valor: string }) {
   return (
-    <div className="border-l-2 border-[var(--orange)]/50 pl-3">
-      <dt className="text-[11px] uppercase tracking-wide text-white/40 font-bold">{label}</dt>
-      <dd className="text-white/85">{valor}</dd>
+    <div className="border-l-2 border-[var(--blue)]/40 pl-3">
+      <dt className="text-[11px] uppercase tracking-wide text-black/40 font-bold">{label}</dt>
+      <dd className="text-black/80">{valor}</dd>
     </div>
   );
 }

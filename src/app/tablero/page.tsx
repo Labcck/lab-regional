@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { BarChart3, Download, ScrollText, Search, Sparkles, Zap } from "lucide-react";
+import { BarChart3, Download, ScrollText, Search, Sparkles, Trophy, Zap } from "lucide-react";
 import { ACCIONES, PAISES, ROOM_CODE } from "@/lib/data";
 import type { AccionId, TableroData } from "@/lib/types";
 
@@ -111,6 +111,43 @@ export default function Tablero() {
               Todavía no hay respuestas. Compartí el enlace de la dinámica con
               las participantes para que empiecen desde su celular.
             </p>
+          </div>
+        )}
+
+        {data && data.porAccion.length > 0 && (
+          <div className="glass-card rounded-2xl p-6 mb-6 border-2 border-[var(--blue)]/30 animate-fade-up">
+            <p className="inline-flex items-center gap-1.5 text-xs uppercase tracking-widest text-[var(--orange)] font-bold mb-2">
+              <Trophy className="w-3.5 h-3.5" />
+              Oportunidad regional priorizada
+            </p>
+            <h2 className="text-xl font-extrabold mb-1 inline-flex items-center gap-2">
+              <IconoAccion id={data.porAccion[0].accion} className="w-5 h-5 text-[var(--blue)]" />
+              {data.porAccion[0].label}
+            </h2>
+            <p className="text-sm text-black/60 mb-3">
+              Es el tipo de solución que más veces se repitió durante la
+              sesión — la primera candidata para que el LAB la explore.
+            </p>
+            <div className="flex items-center gap-3 flex-wrap">
+              <div className="flex gap-1.5 flex-wrap">
+                {data.porAccion[0].paises.map((id) => {
+                  const p = pais(id);
+                  if (!p) return null;
+                  return (
+                    <span
+                      key={id}
+                      className="inline-flex items-center gap-1.5 rounded-full bg-[var(--blue-light)] pl-1.5 pr-3 py-1 text-sm"
+                    >
+                      <Image src={p.flag} alt="" width={18} height={18} className="rounded-full" />
+                      <span className="text-[var(--blue-dark)] font-semibold">{id}</span>
+                    </span>
+                  );
+                })}
+              </div>
+              <span className="text-sm text-black/50">
+                {data.porAccion[0].count} respuestas · {data.porAccion[0].paises.length} países
+              </span>
+            </div>
           </div>
         )}
 

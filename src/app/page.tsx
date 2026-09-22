@@ -2,7 +2,16 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { BarChart3, Globe2, LayoutDashboard, ScrollText, Search, Sparkles, Zap } from "lucide-react";
+import {
+  ArrowLeft,
+  BarChart3,
+  Globe2,
+  LayoutDashboard,
+  ScrollText,
+  Search,
+  Sparkles,
+  Zap,
+} from "lucide-react";
 import { ACCIONES, PAISES, ROOM_CODE } from "@/lib/data";
 import type { AccionId, IdeaGenerada } from "@/lib/types";
 
@@ -117,7 +126,11 @@ export default function Home() {
           )}
 
           {paso === "pais" && (
-            <Pregunta titulo="¿De qué país venís?" subtitulo="Elegí tu país para continuar.">
+            <Pregunta
+              titulo="¿De qué país venís?"
+              subtitulo="Elegí tu país para continuar."
+              onAtras={() => setPaso("bienvenida")}
+            >
               <div className="grid grid-cols-2 gap-2.5">
                 {PAISES.map((p) => (
                   <button
@@ -155,6 +168,7 @@ export default function Home() {
             <Pregunta
               titulo="Si el LAB pudiera resolver una sola cosa para tu país, ¿qué sería?"
               subtitulo="Pensá en algo que hoy te genere tiempo, esfuerzo o dificultad."
+              onAtras={() => setPaso("pais")}
             >
               <textarea
                 value={problema}
@@ -182,6 +196,7 @@ export default function Home() {
             <Pregunta
               titulo="¿Qué debería hacer la solución ideal?"
               subtitulo="Elegí la acción principal que necesitás."
+              onAtras={() => setPaso("reto")}
             >
               <div className="grid grid-cols-2 gap-2.5">
                 {ACCIONES.map((a) => {
@@ -347,14 +362,25 @@ export default function Home() {
 function Pregunta({
   titulo,
   subtitulo,
+  onAtras,
   children,
 }: {
   titulo: string;
   subtitulo: string;
+  onAtras?: () => void;
   children: React.ReactNode;
 }) {
   return (
     <div className="space-y-4">
+      {onAtras && (
+        <button
+          onClick={onAtras}
+          className="inline-flex items-center gap-1 text-xs font-semibold text-black/40 hover:text-[var(--blue)] transition-colors -ml-1"
+        >
+          <ArrowLeft className="w-3.5 h-3.5" />
+          Atrás
+        </button>
+      )}
       <div>
         <h2 className="text-lg font-bold leading-snug">{titulo}</h2>
         <p className="text-sm text-black/55">{subtitulo}</p>

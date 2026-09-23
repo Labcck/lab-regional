@@ -65,6 +65,15 @@ export const ACCIONES: {
       `Una IA que ejecuta automáticamente las tareas repetitivas detrás de "${problema}", liberando tiempo del equipo.`,
     mvp: "Flujo automatizado de principio a fin para la tarea más repetitiva.",
   },
+  {
+    id: "otro",
+    label: "Otro",
+    emoji: "💡",
+    nombrePrefijo: "Solución a medida",
+    comoFunciona: (problema) =>
+      `Una IA diseñada a la medida para resolver "${problema}", según la necesidad específica descrita.`,
+    mvp: "Prototipo inicial definido junto con el equipo, según la necesidad concreta.",
+  },
 ];
 
 export function getAccion(id: AccionId) {

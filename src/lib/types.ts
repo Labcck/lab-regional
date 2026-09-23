@@ -1,4 +1,4 @@
-export type AccionId = "buscar" | "analizar" | "generar" | "resumir" | "automatizar";
+export type AccionId = "buscar" | "analizar" | "generar" | "resumir" | "automatizar" | "otro";
 
 export interface Respuesta {
   id: string;
@@ -6,6 +6,7 @@ export interface Respuesta {
   pais: string;
   problema: string;
   accion: AccionId;
+  accionDetalle?: string;
   createdAt: number;
 }
 
@@ -33,6 +34,7 @@ export interface TableroData {
     pais: string;
     problema: string;
     accion: AccionId;
+    accionDetalle?: string;
     createdAt: number;
   }[];
 }

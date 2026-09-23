@@ -40,6 +40,7 @@ export async function addResponse(resp: Respuesta): Promise<void> {
       pais: resp.pais,
       problema: resp.problema,
       accion: resp.accion,
+      accion_detalle: resp.accionDetalle ?? null,
       created_at: new Date(resp.createdAt).toISOString(),
     });
     if (error) throw new Error(error.message);
@@ -60,7 +61,7 @@ export async function getResponses(room: string): Promise<Respuesta[]> {
     const sb = await getSupabase();
     const { data, error } = await sb
       .from("respuestas")
-      .select("id, room, pais, problema, accion, created_at")
+      .select("id, room, pais, problema, accion, accion_detalle, created_at")
       .eq("room", room)
       .order("created_at", { ascending: true });
     if (error) throw new Error(error.message);
@@ -70,6 +71,7 @@ export async function getResponses(room: string): Promise<Respuesta[]> {
       pais: r.pais,
       problema: r.problema,
       accion: r.accion,
+      accionDetalle: r.accion_detalle ?? undefined,
       createdAt: new Date(r.created_at).getTime(),
     }));
   }

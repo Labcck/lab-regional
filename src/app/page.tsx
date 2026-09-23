@@ -7,6 +7,7 @@ import {
   BarChart3,
   Globe2,
   LayoutDashboard,
+  PenLine,
   ScrollText,
   Search,
   Sparkles,
@@ -25,6 +26,7 @@ const ICONOS_ACCION: Record<AccionId, React.ComponentType<{ className?: string }
   generar: Sparkles,
   resumir: ScrollText,
   automatizar: Zap,
+  otro: PenLine,
 };
 
 export default function Home() {
@@ -32,6 +34,7 @@ export default function Home() {
   const [pais, setPais] = useState<string>("");
   const [problema, setProblema] = useState("");
   const [accion, setAccion] = useState<AccionId | null>(null);
+  const [accionDetalle, setAccionDetalle] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
 
@@ -48,7 +51,13 @@ export default function Home() {
       const res = await fetch("/api/responder", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ room: ROOM_CODE, pais, problema, accion: id }),
+        body: JSON.stringify({
+          room: ROOM_CODE,
+          pais,
+          problema,
+          accion: id,
+          accionDetalle: id === "otro" ? accionDetalle : undefined,
+        }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Error al enviar");
@@ -70,6 +79,7 @@ export default function Home() {
     setPais("");
     setProblema("");
     setAccion(null);
+    setAccionDetalle("");
     setIdea(null);
     setPaisesMatch([]);
     setTotalMatch(0);
@@ -221,9 +231,22 @@ export default function Home() {
                 })}
               </div>
 
+              {accion === "otro" && (
+                <input
+                  value={accionDetalle}
+                  onChange={(e) => setAccionDetalle(e.target.value)}
+                  placeholder="Contanos qué acción te gustaría..."
+                  maxLength={80}
+                  autoFocus
+                  className="w-full mt-3 rounded-xl bg-[var(--bg-soft)] border border-[var(--card-border)] px-4 py-3 text-base outline-none focus:border-[var(--blue)] placeholder:text-black/30"
+                />
+              )}
+
               <button
                 onClick={() => accion && verOportunidad(accion)}
-                disabled={!accion || enviando}
+                disabled={
+                  !accion || enviando || (accion === "otro" && !accionDetalle.trim())
+                }
                 className="w-full mt-4 rounded-xl py-3.5 font-bold text-white bg-gradient-to-r from-[var(--blue)] to-[var(--blue-dark)] active:scale-[0.98] transition-transform disabled:opacity-30 disabled:pointer-events-none"
               >
                 Ver oportunidad →

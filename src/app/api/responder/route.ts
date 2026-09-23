@@ -4,7 +4,14 @@ import { generarIdea } from "@/lib/idea";
 import { addResponse, getResponses } from "@/lib/store";
 import type { AccionId, Respuesta } from "@/lib/types";
 
-const ACCION_IDS = new Set(["buscar", "analizar", "generar", "resumir", "automatizar"]);
+const ACCION_IDS = new Set([
+  "buscar",
+  "analizar",
+  "generar",
+  "resumir",
+  "automatizar",
+  "otro",
+]);
 
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null);
@@ -13,7 +20,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Solicitud inválida" }, { status: 400 });
   }
 
-  const { room, pais, problema, accion } = body as Record<string, string>;
+  const { room, pais, problema, accion, accionDetalle } = body as Record<string, string>;
 
   if (!room || typeof room !== "string") {
     return NextResponse.json({ error: "Falta el código de sesión" }, { status: 400 });
@@ -27,6 +34,9 @@ export async function POST(req: NextRequest) {
   if (!accion || !ACCION_IDS.has(accion)) {
     return NextResponse.json({ error: "Acción inválida" }, { status: 400 });
   }
+  if (accion === "otro" && (!accionDetalle || !accionDetalle.trim())) {
+    return NextResponse.json({ error: "Falta describir la acción" }, { status: 400 });
+  }
 
   const respuesta: Respuesta = {
     id: crypto.randomUUID(),
@@ -34,12 +44,19 @@ export async function POST(req: NextRequest) {
     pais,
     problema: problema.trim().slice(0, 280),
     accion: accion as AccionId,
+    accionDetalle:
+      accion === "otro" ? accionDetalle.trim().slice(0, 80) : undefined,
     createdAt: Date.now(),
   };
 
   await addResponse(respuesta);
 
-  const idea = generarIdea(respuesta.pais, respuesta.problema, respuesta.accion);
+  const idea = generarIdea(
+    respuesta.pais,
+    respuesta.problema,
+    respuesta.accion,
+    respuesta.accionDetalle
+  );
 
   const todas = await getResponses(respuesta.room);
   const conMismaAccion = todas.filter((r) => r.accion === respuesta.accion);

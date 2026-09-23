@@ -17,13 +17,14 @@ export async function GET(req: NextRequest) {
 
   const respuestas = await getResponses(room);
   const filas = [
-    ["País", "Reto", "Acción de IA elegida", "Fecha y hora"],
+    ["País", "Reto", "Acción de IA elegida", "Detalle (si eligió Otro)", "Fecha y hora"],
     ...respuestas
       .sort((a, b) => a.createdAt - b.createdAt)
       .map((r) => [
         getPais(r.pais)?.nombre ?? r.pais,
         r.problema,
         getAccion(r.accion)?.label ?? r.accion,
+        r.accionDetalle ?? "",
         new Date(r.createdAt).toLocaleString("es-CR"),
       ]),
   ];

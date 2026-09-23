@@ -34,6 +34,7 @@ export async function GET(req: NextRequest) {
         pais: r.pais,
         problema: r.problema,
         accion: r.accion,
+        accionDetalle: r.accionDetalle,
         createdAt: r.createdAt,
       })),
   };

@@ -2,7 +2,16 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { BarChart3, Download, ScrollText, Search, Sparkles, Trophy, Zap } from "lucide-react";
+import {
+  BarChart3,
+  Download,
+  PenLine,
+  ScrollText,
+  Search,
+  Sparkles,
+  Trophy,
+  Zap,
+} from "lucide-react";
 import { ACCIONES, PAISES, ROOM_CODE } from "@/lib/data";
 import type { AccionId, TableroData } from "@/lib/types";
 
@@ -14,6 +23,7 @@ const ICONOS_ACCION: Record<AccionId, React.ComponentType<{ className?: string }
   generar: Sparkles,
   resumir: ScrollText,
   automatizar: Zap,
+  otro: PenLine,
 };
 
 function pais(id: string) {
@@ -243,8 +253,10 @@ export default function Tablero() {
                       <p className="text-sm text-black/80">{r.problema}</p>
                       <p className="text-[11px] text-black/40 mt-1 inline-flex items-center gap-1">
                         <IconoAccion id={r.accion} className="w-3 h-3" />
-                        {ACCIONES.find((a) => a.id === r.accion)?.label} · {r.pais} ·{" "}
-                        {horaCorta(r.createdAt)}
+                        {r.accion === "otro" && r.accionDetalle
+                          ? r.accionDetalle
+                          : ACCIONES.find((a) => a.id === r.accion)?.label}{" "}
+                        · {r.pais} · {horaCorta(r.createdAt)}
                       </p>
                     </div>
                   </div>

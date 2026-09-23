@@ -56,6 +56,7 @@ probar el flujo en tu computadora).
      pais text not null,
      problema text not null,
      accion text not null,
+     accion_detalle text,
      created_at timestamptz not null default now()
    );
 
@@ -73,6 +74,15 @@ probar el flujo en tu computadora).
 
 Con esto, en **Supabase → Table Editor → respuestas** podés ver en cualquier
 momento, sin necesidad del CSV, todo lo que fue escribiendo cada persona.
+
+#### ⚠️ Si tu tabla ya existía antes de esta versión
+
+La opción "Otro" (texto libre) necesita una columna nueva. Corré esto una
+vez en **SQL Editor** — es seguro, no borra nada:
+
+```sql
+alter table respuestas add column if not exists accion_detalle text;
+```
 
 ### Alternativa: Redis (Upstash)
 

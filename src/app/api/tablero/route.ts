@@ -14,11 +14,18 @@ export async function GET(req: NextRequest) {
   const porAccion: AccionStat[] = ACCIONES.map((a) => {
     const enAccion = respuestas.filter((r) => r.accion === a.id);
     const paises = Array.from(new Set(enAccion.map((r) => r.pais)));
+    const detalles =
+      a.id === "otro"
+        ? Array.from(
+            new Set(enAccion.map((r) => r.accionDetalle).filter((d): d is string => Boolean(d)))
+          )
+        : undefined;
     return {
       accion: a.id,
       label: a.label,
       count: enAccion.length,
       paises,
+      detalles,
     };
   })
     .filter((a) => a.count > 0)

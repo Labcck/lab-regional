@@ -37,6 +37,10 @@ function IconoAccion({ id, className }: { id: string; className?: string }) {
   return <Icono className={className} />;
 }
 
+function etiquetaAccion(a: { label: string; detalles?: string[] }) {
+  return a.detalles && a.detalles.length > 0 ? a.detalles.join(", ") : a.label;
+}
+
 function horaCorta(ts: number) {
   return new Date(ts).toLocaleTimeString("es-CR", { hour: "2-digit", minute: "2-digit" });
 }
@@ -145,7 +149,7 @@ export default function Tablero() {
             </p>
             <h2 className="text-xl font-extrabold mb-1 inline-flex items-center gap-2">
               <IconoAccion id={data.porAccion[0].accion} className="w-5 h-5 text-[var(--blue)]" />
-              {data.porAccion[0].label}
+              {etiquetaAccion(data.porAccion[0])}
             </h2>
             <p className="text-sm text-black/60 mb-3">
               Es el tipo de solución que más veces se repitió durante la
@@ -187,10 +191,10 @@ export default function Tablero() {
               <tbody>
                 {data.porAccion.map((a) => (
                   <tr key={a.accion} className="border-b border-[var(--card-border)] last:border-0">
-                    <td className="px-5 py-3.5 font-semibold whitespace-nowrap">
+                    <td className="px-5 py-3.5 font-semibold">
                       <span className="inline-flex items-center gap-2">
-                        <IconoAccion id={a.accion} className="w-4 h-4 text-[var(--blue)]" />
-                        {a.label}
+                        <IconoAccion id={a.accion} className="w-4 h-4 text-[var(--blue)] shrink-0" />
+                        {etiquetaAccion(a)}
                       </span>
                     </td>
                     <td className="px-5 py-3.5">

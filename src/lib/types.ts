@@ -24,6 +24,7 @@ export interface AccionStat {
   label: string;
   count: number;
   paises: string[];
+  detalles?: string[];
 }
 
 export interface TableroData {

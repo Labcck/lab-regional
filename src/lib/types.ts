@@ -31,6 +31,7 @@ export interface TableroData {
   totalPaises: number;
   porAccion: AccionStat[];
   respuestas: {
+    id: string;
     pais: string;
     problema: string;
     accion: AccionId;

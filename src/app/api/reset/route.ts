@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { resetRoom } from "@/lib/store";
+import { deleteResponse, resetRoom } from "@/lib/store";
 
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null);
   const room = (body?.room || "").trim().toUpperCase();
   const pin = body?.pin || "";
+  const id = body?.id as string | undefined;
 
   if (!room) {
     return NextResponse.json({ error: "Falta el código de sesión" }, { status: 400 });
@@ -15,6 +16,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "PIN incorrecto" }, { status: 401 });
   }
 
-  await resetRoom(room);
+  if (id) {
+    await deleteResponse(room, id);
+  } else {
+    await resetRoom(room);
+  }
   return NextResponse.json({ ok: true });
 }

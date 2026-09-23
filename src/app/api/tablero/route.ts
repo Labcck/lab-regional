@@ -31,6 +31,7 @@ export async function GET(req: NextRequest) {
     respuestas: [...respuestas]
       .sort((a, b) => b.createdAt - a.createdAt)
       .map((r) => ({
+        id: r.id,
         pais: r.pais,
         problema: r.problema,
         accion: r.accion,

@@ -9,6 +9,7 @@ import {
   ScrollText,
   Search,
   Sparkles,
+  Trash2,
   Trophy,
   Zap,
 } from "lucide-react";
@@ -79,10 +80,22 @@ export default function Tablero() {
       setResetMsg("Sesión reiniciada.");
       setMostrarReset(false);
       setPin("");
+      setData(null);
+      setCargando(true);
     } else {
       const json = await res.json().catch(() => ({}));
       setResetMsg(json.error || "No se pudo reiniciar.");
     }
+  }
+
+  async function borrarRespuesta(id: string) {
+    if (!confirm("¿Borrar esta respuesta?")) return;
+    await fetch("/api/reset", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ room: ROOM_CODE, id }),
+    });
+    setData((d) => (d ? { ...d, respuestas: d.respuestas.filter((r) => r.id !== id) } : d));
   }
 
   const maxCount = data?.porAccion[0]?.count ?? 1;
@@ -233,11 +246,11 @@ export default function Tablero() {
               </a>
             </div>
             <div className="space-y-2 max-h-[420px] overflow-y-auto pr-1">
-              {data.respuestas.map((r, i) => {
+              {data.respuestas.map((r) => {
                 const p = pais(r.pais);
                 return (
                   <div
-                    key={i}
+                    key={r.id}
                     className="rounded-xl bg-[var(--bg-soft)] border border-[var(--card-border)] px-4 py-3 flex items-start gap-3"
                   >
                     {p && (
@@ -259,6 +272,13 @@ export default function Tablero() {
                         · {r.pais} · {horaCorta(r.createdAt)}
                       </p>
                     </div>
+                    <button
+                      onClick={() => borrarRespuesta(r.id)}
+                      title="Borrar esta respuesta"
+                      className="shrink-0 text-black/25 hover:text-[var(--red)] transition-colors p-1"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
                   </div>
                 );
               })}

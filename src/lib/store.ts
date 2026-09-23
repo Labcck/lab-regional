@@ -97,3 +97,27 @@ export async function resetRoom(room: string): Promise<void> {
   }
   memoryStore.delete(room);
 }
+
+export async function deleteResponse(room: string, id: string): Promise<void> {
+  if (hasSupabase) {
+    const sb = await getSupabase();
+    const { error } = await sb.from("respuestas").delete().eq("room", room).eq("id", id);
+    if (error) throw new Error(error.message);
+    return;
+  }
+  if (hasKv) {
+    const kv = await getKv();
+    const raw = await kv.lrange<string>(key(room), 0, -1);
+    const restantes = raw.filter((r) => {
+      const parsed = (typeof r === "string" ? JSON.parse(r) : r) as Respuesta;
+      return parsed.id !== id;
+    });
+    await kv.del(key(room));
+    if (restantes.length > 0) {
+      await kv.rpush(key(room), ...restantes.map((r) => (typeof r === "string" ? r : JSON.stringify(r))));
+    }
+    return;
+  }
+  const list = memoryStore.get(room) ?? [];
+  memoryStore.set(room, list.filter((r) => r.id !== id));
+}
